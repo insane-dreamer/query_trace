@@ -17,11 +17,13 @@ module QueryTrace
   def log_info_with_trace(sql, name, runtime)
     log_info_without_trace(sql, name, runtime)
     
-    return unless @logger and @logger.debug?
-    return if / Columns$/ =~ name
+    if @config[:query_trace]
+      return unless @logger and @logger.debug?
+      return if / Columns$/ =~ name
 
-    trace = clean_trace(caller[2..-1])
-    @logger.debug(format_trace(trace))
+      trace = clean_trace(caller[2..-1])
+      @logger.debug(format_trace(trace))
+    end
   end
   
   def format_trace(trace)
@@ -41,6 +43,9 @@ module QueryTrace
   def clean_trace(trace)
     return trace unless defined?(RAILS_ROOT)
     
-    trace.select{|t| /#{Regexp.escape(File.expand_path(RAILS_ROOT))}/ =~ t}.reject{|t| VENDOR_RAILS_REGEXP =~ t}.collect{|t| t.gsub(RAILS_ROOT + '/', '')}
+    trace = trace.select {|t| /#{Regexp.escape(File.expand_path(RAILS_ROOT))}/ =~ t}
+    trace.reject! {|t| VENDOR_RAILS_REGEXP =~ t}
+    trace.map! {|t| t.gsub(RAILS_ROOT + '/', '')}
+    trace
   end
 end
