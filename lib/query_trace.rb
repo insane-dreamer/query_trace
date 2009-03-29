@@ -29,9 +29,9 @@ module QueryTrace
   def format_trace(trace)
     if ActiveRecord::Base.colorize_logging
       if row_even
-        message_color = "35;2"
+        message_color = "37;40"
       else
-        message_color = "36;2"
+        message_color = "37;40"
       end
       trace.collect{|t| "    \e[#{message_color}m#{t}\e[0m"}.join("\n")
     else
