@@ -46,6 +46,7 @@ module QueryTrace
     trace = trace.select {|t| /#{Regexp.escape(File.expand_path(RAILS_ROOT))}/ =~ t}
     trace.reject! {|t| VENDOR_RAILS_REGEXP =~ t}
     trace.map! {|t| t.gsub(RAILS_ROOT + '/', '')}
-    trace
+    trace.uniq!
+    trace[0,3]
   end
 end
